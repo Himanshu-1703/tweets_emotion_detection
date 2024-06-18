@@ -1,0 +1,19 @@
+schema: '2.0'
+stages:
+  data_ingestion:
+    cmd: python .\tweets_emotion_detection\data\data_ingestion.py
+    deps:
+    - path: .\tweets_emotion_detection\data\data_ingestion.py
+      hash: md5
+      md5: ccb6ab346611ac4b75d912cdb1225030
+      size: 2661
+    params:
+      params.yaml:
+        data_ingestion.random_state: 42
+        data_ingestion.test_size: 0.2
+    outs:
+    - path: .\data\raw\
+      hash: md5
+      md5: ef14710595d07ef6e1ac587c252dcaac.dir
+      size: 3328220
+      nfiles: 2
