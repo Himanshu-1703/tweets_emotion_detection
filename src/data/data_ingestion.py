@@ -1,10 +1,9 @@
 import pandas as pd
 import numpy as np
-import logging
 from sklearn.model_selection import train_test_split
 from pathlib import Path
 from yaml import safe_load
-from logger import CustomLogger
+from src.logger import CustomLogger
 from typing import Tuple
 
 # create the custom logger

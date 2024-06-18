@@ -1,8 +1,8 @@
 stages:
   data_ingestion:
-    cmd: python .\tweets_emotion_detection\data\data_ingestion.py
+    cmd: python .\src\data\data_ingestion.py
     deps:
-    - .\tweets_emotion_detection\data\data_ingestion.py
+    - .\src\data\data_ingestion.py
     params:
     - data_ingestion.random_state
     - data_ingestion.test_size
