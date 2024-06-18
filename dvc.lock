@@ -1,12 +1,12 @@
 schema: '2.0'
 stages:
   data_ingestion:
-    cmd: python .\tweets_emotion_detection\data\data_ingestion.py
+    cmd: python .\src\data\data_ingestion.py
     deps:
-    - path: .\tweets_emotion_detection\data\data_ingestion.py
+    - path: .\src\data\data_ingestion.py
       hash: md5
-      md5: ccb6ab346611ac4b75d912cdb1225030
-      size: 2661
+      md5: a8dd52980362bbb19a3e9c87e16cb430
+      size: 2649
     params:
       params.yaml:
         data_ingestion.random_state: 42
