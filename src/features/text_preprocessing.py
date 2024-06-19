@@ -16,7 +16,7 @@ nltk.download('stopwords')
 logger = CustomLogger('text_preprocessing')
 
 # read the dataframe
-def read_data(data_path):
+def read_data(data_path: Path) -> pd.DataFrame:
     df = pd.read_csv(data_path)
     return df
 
@@ -90,11 +90,20 @@ def save_the_data(dataframe: pd.DataFrame, data_path: Path) -> None:
         logger.log_message(f"DataFrame {data_path.name} saved successfuly")
     except Exception as e:
         logger.log_message(f'Dataframe not saved')
+        
+
+def drop_missing_values(df: pd.DataFrame) -> pd.DataFrame:
+    return(
+        df
+        .dropna()
+    )
+
+
 
 def main():
     root_path = Path(__file__).parent.parent.parent
     data_path = root_path / "data" / "raw"
-    save_path = data_path.parent / "processed"
+    save_path = data_path.parent / "interim"
     save_path.mkdir(exist_ok=True)
     logger.log_message("Processed data folder created")
    
@@ -106,10 +115,13 @@ def main():
         # do preprocessing
         df_trans = normalize_text(df)
         logger.log_message(f'Text preprocessing on {filename} complete')
+        # drop missing values
+        df_final = drop_missing_values(df_trans) 
+        logger.log_message(f'Missing values in the data are {df_final.isna().sum().sum()}')
         # save filename
         save_filename = filename.rstrip(".csv")
         # save the processed data
-        save_the_data(df, save_path / f'{save_filename}_processed.csv')
+        save_the_data(df_trans, save_path / f'{save_filename}_processed.csv')
 
 if __name__ == "__main__":
     main()
