@@ -41,17 +41,21 @@ def do_data_splitting(dataframe: str) -> Tuple[pd.DataFrame,pd.DataFrame]:
     logger.log_message(f'Parameters : test_size={test_size}  random_state={random_state}')
     
     train_data, test_data = train_test_split(dataframe,test_size=test_size,random_state=random_state)
-    logger.log_message('Data split into train and test data')    
+    logger.log_message("""
+                       Data split into train data with shape {train_data.shape} and 
+                       test data with shape {test_data.shape}
+                       """)   
+     
     return train_data, test_data
 
 
-def save_the_data(dataframe: pd.DataFrame, data_path: str) -> None:
+def save_the_data(dataframe: pd.DataFrame, data_path: Path) -> None:
     try:
         # save the data to path
         dataframe.to_csv(data_path,index=False)
-        logger.log_message("DataFrame saved successfuly")
+        logger.log_message(f"DataFrame {data_path.name} saved successfuly")
     except Exception as e:
-        logger.log_message('Dataframe not saved')
+        logger.log_message(f'Dataframe not saved')
         
             
 def drop_column(dataframe: pd.DataFrame, column_name: str) -> pd.DataFrame:
@@ -66,6 +70,7 @@ def main():
     df = load_data_from_link(URL)
     # drop the column from data
     df_trans = drop_column(df,COLUMN_TO_DROP)
+    logger.log_message(f"Column name {COLUMN_TO_DROP} dropped from data")
     # split the data
     train_df, test_df = do_data_splitting(df_trans)
     # save the train and test data to a directory
@@ -74,6 +79,7 @@ def main():
     data_path = root_path / "data" / "raw"
     # make the raw data directory
     data_path.mkdir(exist_ok=True,parents=True)
+    logger.log_message("Raw data folder created")
     # save the train data
     save_the_data(train_df,data_path / "train.csv")
     # save the test data
