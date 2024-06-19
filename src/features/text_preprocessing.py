@@ -93,10 +93,9 @@ def save_the_data(dataframe: pd.DataFrame, data_path: Path) -> None:
         
 
 def drop_missing_values(df: pd.DataFrame) -> pd.DataFrame:
-    return(
-        df
-        .dropna()
-    )
+    return (
+        df.dropna()
+        )
 
 
 
@@ -121,7 +120,7 @@ def main():
         # save filename
         save_filename = filename.rstrip(".csv")
         # save the processed data
-        save_the_data(df_trans, save_path / f'{save_filename}_processed.csv')
+        save_the_data(df_final, save_path / f'{save_filename}_processed.csv')
 
 if __name__ == "__main__":
     main()

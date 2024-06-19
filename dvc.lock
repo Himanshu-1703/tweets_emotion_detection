@@ -27,11 +27,37 @@ stages:
       nfiles: 2
     - path: .\src\features\text_preprocessing.py
       hash: md5
-      md5: 1b61c4fc1262da54e2df8cb83eaab493
-      size: 3665
+      md5: a3337a2647368c7b5df6e526d975c843
+      size: 3988
     outs:
-    - path: .\data\processed\
+    - path: .\data\interim\
       hash: md5
       md5: 828ccc3b3e0aec76137402c2b65f250a.dir
       size: 2362414
+      nfiles: 2
+  feature_engineering:
+    cmd: python .\src\features\feature_engineering.py train_processed.csv test_processed.csv
+    deps:
+    - path: .\data\interim\
+      hash: md5
+      md5: 828ccc3b3e0aec76137402c2b65f250a.dir
+      size: 2362414
+      nfiles: 2
+    - path: .\src\features\feature_engineering.py
+      hash: md5
+      md5: 79c1314f162fc313cd8a05559a3c8147
+      size: 4824
+    params:
+      params.yaml:
+        feature_engineering.max_features: 500
+    outs:
+    - path: .\data\processed\
+      hash: md5
+      md5: 8f17afea39de39876caf2f5d6053bd1b.dir
+      size: 82677442
+      nfiles: 2
+    - path: .\models\transformers\
+      hash: md5
+      md5: 67d1cc36c128755e5b35e861ac44c6dd.dir
+      size: 18894
       nfiles: 2
