@@ -27,3 +27,15 @@ stages:
     outs:
     - .\data\processed\
     - .\models\transformers\
+
+  train:
+    cmd: python .\src\modeling\train.py train_final.csv
+    deps:
+    - .\data\processed\train_final.csv
+    - .\src\modeling\train.py
+    params:
+    - train.random_forest
+    metrics:
+    - .\reports\oob_score.json
+    outs:
+    - .\models\classifiers\
