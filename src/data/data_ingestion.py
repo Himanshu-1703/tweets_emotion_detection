@@ -5,9 +5,16 @@ from pathlib import Path
 from yaml import safe_load
 from src.logger import CustomLogger
 from typing import Tuple
+import logging
 
 # create the custom logger
 logger = CustomLogger(logger_name='data_ingestion')
+
+# create a stream handler
+console_handler = logging.StreamHandler()
+
+# add console handler to the logger
+logger.logger.addHandler(console_handler)
 
 # column to drop
 COLUMN_TO_DROP = 'tweet_id'
@@ -27,6 +34,7 @@ def load_data_from_link(url: str) -> pd.DataFrame:
         return df
     except FileNotFoundError as e:
         logger.log_message('Unable to download dataset')
+
 
 
 def do_data_splitting(dataframe: str) -> Tuple[pd.DataFrame,pd.DataFrame]:
@@ -49,6 +57,7 @@ def do_data_splitting(dataframe: str) -> Tuple[pd.DataFrame,pd.DataFrame]:
     return train_data, test_data
 
 
+
 def save_the_data(dataframe: pd.DataFrame, data_path: Path) -> None:
     try:
         # save the data to path
@@ -57,6 +66,7 @@ def save_the_data(dataframe: pd.DataFrame, data_path: Path) -> None:
     except Exception as e:
         logger.log_message(f'Dataframe not saved')
         
+
             
 def drop_column(dataframe: pd.DataFrame, column_name: str) -> pd.DataFrame:
     return (
@@ -64,6 +74,7 @@ def drop_column(dataframe: pd.DataFrame, column_name: str) -> pd.DataFrame:
     )
     
     
+
     
 def main():
     # load the data from url
@@ -84,6 +95,8 @@ def main():
     save_the_data(train_df,data_path / "train.csv")
     # save the test data
     save_the_data(test_df,data_path / "test.csv")
+
+
     
 if __name__ == "__main__":
     main()

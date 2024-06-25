@@ -3,6 +3,7 @@ import numpy as np
 import re
 import nltk
 import sys
+import logging
 from pathlib import Path
 from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
@@ -15,6 +16,13 @@ nltk.download('stopwords')
 # custom logger for module
 logger = CustomLogger('text_preprocessing')
 
+# create a stream handler
+console_handler = logging.StreamHandler()
+
+# add console handler to the logger
+logger.logger.addHandler(console_handler)
+
+
 # read the dataframe
 def read_data(data_path: Path) -> pd.DataFrame:
     df = pd.read_csv(data_path)
@@ -22,6 +30,7 @@ def read_data(data_path: Path) -> pd.DataFrame:
 
 nltk.download('wordnet')
 nltk.download('stopwords')
+
 
 def lemmatization(text):
     lemmatizer= WordNetLemmatizer()
@@ -32,14 +41,17 @@ def lemmatization(text):
 
     return " " .join(text)
 
+
 def remove_stop_words(text):
     stop_words = set(stopwords.words("english"))
     Text=[i for i in str(text).split() if i not in stop_words]
     return " ".join(Text)
 
+
 def removing_numbers(text):
     text=''.join([i for i in text if not i.isdigit()])
     return text
+
 
 def lower_case(text):
 
@@ -48,6 +60,7 @@ def lower_case(text):
     text=[y.lower() for y in text]
 
     return " " .join(text)
+
 
 def removing_punctuations(text):
     ## Remove punctuations
@@ -59,14 +72,17 @@ def removing_punctuations(text):
     text =  " ".join(text.split())
     return text.strip()
 
+
 def removing_urls(text):
     url_pattern = re.compile(r'https?://\S+|www\.\S+')
     return url_pattern.sub(r'', text)
+
 
 def remove_small_sentences(df):
     for i in range(len(df)):
         if len(df.text.iloc[i].split()) < 3:
             df.text.iloc[i] = np.nan
+
 
 def normalize_text(df):
     df.loc[:,'content'] = df.loc[:,'content'].apply(lambda x : lower_case(x))
@@ -82,6 +98,7 @@ def normalize_text(df):
     df.loc[:,'content'] = df.loc[:,'content'].apply(lambda x : lemmatization(x))
     logger.log_message("Lemmatization applied on text")
     return df
+
 
 def save_the_data(dataframe: pd.DataFrame, data_path: Path) -> None:
     try:
@@ -121,6 +138,8 @@ def main():
         save_filename = filename.rstrip(".csv")
         # save the processed data
         save_the_data(df_final, save_path / f'{save_filename}_processed.csv')
+
+
 
 if __name__ == "__main__":
     main()

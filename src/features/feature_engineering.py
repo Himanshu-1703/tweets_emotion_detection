@@ -8,8 +8,7 @@ from sklearn.preprocessing import LabelEncoder
 from sklearn.feature_extraction.text import TfidfVectorizer
 import joblib
 from yaml import safe_load
-
-
+import logging
 
 
 TARTGET = 'sentiment'
@@ -17,10 +16,17 @@ TARTGET = 'sentiment'
 # custom logger for module
 logger = CustomLogger('feature_engineering')
 
+# create a stream handler
+console_handler = logging.StreamHandler()
+
+# add console handler to the logger
+logger.logger.addHandler(console_handler)
+
 # read the dataframe
 def read_data(data_path: Path) -> pd.DataFrame:
     df = pd.read_csv(data_path)
     return df
+
 
 # make X and y
 def make_X_and_y(df: pd.DataFrame,target_column) -> Tuple[pd.DataFrame, pd.Series]:
@@ -29,12 +35,14 @@ def make_X_and_y(df: pd.DataFrame,target_column) -> Tuple[pd.DataFrame, pd.Serie
     logger.log_message('Data split into X and y')
     return X, y
 
+
 def fit_tfidf_transformer(X_train: pd.Series, max_features: int):
     tf_idf = TfidfVectorizer(max_features=max_features)
     # fit the transformer on training data
     tf_idf.fit(X_train)
     logger.log_message('Tfidf transformer trained')
     return tf_idf
+
 
 def transform_data(X,transformer):
     X_trans = pd.DataFrame(transformer.transform(X).toarray())
@@ -50,10 +58,12 @@ def fit_label_encoder(y):
     logger.log_message('Encoder trained')
     return encoder
 
+
 def encode_label(y,encoder):
     y_trans = encoder.transform(y)
     logger.log_message('Feature Encoded')
     return y_trans
+
 
 def save_the_data(dataframe: pd.DataFrame, data_path: Path) -> None:
     try:
@@ -62,6 +72,7 @@ def save_the_data(dataframe: pd.DataFrame, data_path: Path) -> None:
         logger.log_message(f"DataFrame {data_path.name} saved successfuly")
     except Exception as e:
         logger.log_message(f'Dataframe not saved')
+
         
 def read_parameters(params_file_path: str) -> dict:
     with open(params_file_path,'r') as params:
@@ -72,6 +83,7 @@ def read_parameters(params_file_path: str) -> dict:
 
 def save_transformer(obj, save_path: Path):
     joblib.dump(value=obj,filename=save_path)
+
 
 def drop_missing_values(df: pd.DataFrame) -> pd.DataFrame:
     return (
@@ -131,6 +143,7 @@ def main():
             logger.log_message(f'Shape of the final dataframe is {X_trans.shape}')
             # save the data
             save_the_data(X_trans,save_data_path / f"{filename.replace("_processed","_final")}")
+
 
 
 if __name__ == "__main__":
