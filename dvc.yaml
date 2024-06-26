@@ -39,3 +39,11 @@ stages:
     - .\reports\oob_score.json
     outs:
     - .\models\classifiers\
+  predict:
+    cmd: python .\src\modeling\predict.py train_final.csv test_final.csv
+    deps:
+    - .\data\processed
+    - .\models\classifiers\
+    - .\src\modeling\predict.py
+    metrics:
+    - .\reports\metrics.json
