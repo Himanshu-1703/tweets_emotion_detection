@@ -5,8 +5,8 @@ stages:
     deps:
     - path: .\src\data\data_ingestion.py
       hash: md5
-      md5: e8ca98d3790f5b142ce168234a3eed69
-      size: 3126
+      md5: 7f891020f6b9b3e454b860ef993eef54
+      size: 3889
     params:
       params.yaml:
         data_ingestion.random_state: 42
@@ -14,16 +14,16 @@ stages:
     outs:
     - path: .\data\raw\
       hash: md5
-      md5: ef14710595d07ef6e1ac587c252dcaac.dir
-      size: 3328220
+      md5: ebc1ca208dae51606fe999d7d7933e77.dir
+      size: 1368528
       nfiles: 2
   text_preprocessing:
     cmd: python .\src\features\text_preprocessing.py train.csv test.csv
     deps:
     - path: .\data\raw\
       hash: md5
-      md5: ef14710595d07ef6e1ac587c252dcaac.dir
-      size: 3328220
+      md5: ebc1ca208dae51606fe999d7d7933e77.dir
+      size: 1368528
       nfiles: 2
     - path: .\src\features\text_preprocessing.py
       hash: md5
@@ -32,16 +32,16 @@ stages:
     outs:
     - path: .\data\interim\
       hash: md5
-      md5: 828ccc3b3e0aec76137402c2b65f250a.dir
-      size: 2362414
+      md5: fe01fa9040c96b7a3f7ad2112d8351f1.dir
+      size: 966144
       nfiles: 2
   feature_engineering:
     cmd: python .\src\features\feature_engineering.py train_processed.csv test_processed.csv
     deps:
     - path: .\data\interim\
       hash: md5
-      md5: 828ccc3b3e0aec76137402c2b65f250a.dir
-      size: 2362414
+      md5: fe01fa9040c96b7a3f7ad2112d8351f1.dir
+      size: 966144
       nfiles: 2
     - path: .\src\features\feature_engineering.py
       hash: md5
@@ -49,25 +49,25 @@ stages:
       size: 5006
     params:
       params.yaml:
-        feature_engineering.max_features: 5000
+        feature_engineering.max_features: 20000
     outs:
     - path: .\data\processed\
       hash: md5
-      md5: c7ce2f99e7f718c5842683e2a6c97744.dir
-      size: 803977742
+      md5: e0b16d84180dd5dd6db90eecb75fdd7a.dir
+      size: 1369442142
       nfiles: 2
     - path: .\models\transformers\
       hash: md5
-      md5: 58cba0071d1db169736dab54878e0b71.dir
-      size: 179872
+      md5: 99187c3905826409b8fad8295b0b6c26.dir
+      size: 744818
       nfiles: 2
   train:
     cmd: python .\src\modeling\train.py train_final.csv
     deps:
     - path: .\data\processed\train_final.csv
       hash: md5
-      md5: fa42c5ada232dd78915be45135b1d6d9
-      size: 643163623
+      md5: 5f9d126ed347df90c338a3973c049351
+      size: 1096589843
     - path: .\src\modeling\train.py
       hash: md5
       md5: 1c8f3353e0958c9fa939789e2c5351bc
@@ -75,9 +75,8 @@ stages:
     params:
       params.yaml:
         train.random_forest:
-          max_depth: 6
+          max_depth: 7
           n_estimators: 200
-          max_samples: 0.8
           n_jobs: -1
           random_state: 42
           oob_score: true
@@ -85,10 +84,32 @@ stages:
     outs:
     - path: .\models\classifiers\
       hash: md5
-      md5: 255c833e785d5cb02df837a6ae54a7b5.dir
-      size: 5151350
+      md5: ec1666e173ced2e47c2d18f21a8bb7cf.dir
+      size: 1385174
       nfiles: 1
     - path: .\reports\oob_score.json
       hash: md5
-      md5: 71d6b67526e032f685a42c1e6d5ed736
+      md5: 02fa2462e6f1e39cfd585fd238770d89
       size: 41
+  predict:
+    cmd: python .\src\modeling\predict.py train_final.csv test_final.csv
+    deps:
+    - path: .\data\processed
+      hash: md5
+      md5: e0b16d84180dd5dd6db90eecb75fdd7a.dir
+      size: 1369442142
+      nfiles: 2
+    - path: .\models\classifiers\
+      hash: md5
+      md5: ec1666e173ced2e47c2d18f21a8bb7cf.dir
+      size: 1385174
+      nfiles: 1
+    - path: .\src\modeling\predict.py
+      hash: md5
+      md5: cc1ecd2851e59d53c29e3f06aa51b11f
+      size: 3249
+    outs:
+    - path: .\reports\metrics.json
+      hash: md5
+      md5: 236d9f5d617c9a67b2f05b3889c2bbef
+      size: 888

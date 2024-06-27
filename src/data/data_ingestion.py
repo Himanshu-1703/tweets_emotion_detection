@@ -19,6 +19,9 @@ logger.logger.addHandler(console_handler)
 # column to drop
 COLUMN_TO_DROP = 'tweet_id'
 
+# target column name
+TARGET = 'sentiment'
+
 # url for data
 URL = r'https://raw.githubusercontent.com/campusx-official/jupyter-masterclass/main/tweet_emotions.csv'
 
@@ -49,14 +52,18 @@ def do_data_splitting(dataframe: str) -> Tuple[pd.DataFrame,pd.DataFrame]:
     logger.log_message(f'Parameters : test_size={test_size}  random_state={random_state}')
     
     train_data, test_data = train_test_split(dataframe,test_size=test_size,random_state=random_state)
-    logger.log_message("""
+    logger.log_message(f"""
                        Data split into train data with shape {train_data.shape} and 
                        test data with shape {test_data.shape}
                        """)   
      
     return train_data, test_data
 
-
+def filter_classes(df: pd.DataFrame,target_column :str = TARGET) -> pd.DataFrame:
+    val_counts = df[target_column].value_counts(normalize=True)
+    classes_to_filter = val_counts[val_counts >= 0.2].index.tolist()
+    return df.loc[df[target_column].isin(classes_to_filter), :]
+    
 
 def save_the_data(dataframe: pd.DataFrame, data_path: Path) -> None:
     try:
@@ -82,8 +89,17 @@ def main():
     # drop the column from data
     df_trans = drop_column(df,COLUMN_TO_DROP)
     logger.log_message(f"Column name {COLUMN_TO_DROP} dropped from data")
+    
     # split the data
     train_df, test_df = do_data_splitting(df_trans)
+    
+    # filter the data based on frequent classes for train data
+    train_df = filter_classes(df=train_df)
+    logger.log_message(f"unique classes in training data = {train_df[TARGET].unique().tolist()}") 
+    # filter the data based on frequent classes for test data
+    test_df = filter_classes(df=test_df)
+    logger.log_message(f"unique classes in testing data = {test_df[TARGET].unique().tolist()}") 
+    
     # save the train and test data to a directory
     root_path = Path(__file__).parent.parent.parent
     # data directory
